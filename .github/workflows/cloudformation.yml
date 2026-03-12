@@ -1,5 +1,5 @@
 # This is a basic workflow to help you get started with Actions
-
+#updated access permissions, will have to work on tightening it later, for now there is larger access
 name: CloudFormation Push Check  
 
 on:
