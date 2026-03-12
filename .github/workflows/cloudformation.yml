@@ -1,0 +1,46 @@
+# This is a basic workflow to help you get started with Actions
+
+name: CloudFormation Push Check  
+
+on:
+  push:
+    branches: [ "main" ]
+  pull_request:
+    branches: [ "main" ]
+
+
+# A workflow run is made up of one or more jobs that can run sequentially or in parallel
+jobs:
+  build:
+    runs-on: ubuntu-latest #considering OS of AWS
+
+    # Steps represent a sequence of tasks that will be executed as part of the job
+    steps:
+      - name: RunCheckout 
+        uses: actions/checkout@v4
+        #credentials for AWS put in here
+      - name: Configure AWS Credentials
+        uses: aws-actions/configure-aws-credentials@v6.0.0
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: ap-southeast-2
+  deploy:
+    runs-on: ubuntu-latest
+    environment: Test
+    needs: build
+    steps:
+      - name: Configure AWS Credentials
+        uses: aws-actions/configure-aws-credentials@v6.0.0
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: ap-southeast-2
+      - name: Deploy to AWS CloudFormation
+        uses: aws-actions/aws-cloudformation-github-deploy@v2.0.0
+        with:
+          name: learnGlueCloudCICD
+          template: Templates/LambdaCreation.yaml
+          
+    
+      
