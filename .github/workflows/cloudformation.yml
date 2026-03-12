@@ -13,7 +13,32 @@ on:
 jobs:
   deploy:
     runs-on: ubuntu-latest #considering OS of AWS
+    environment:
+      name: Test
+    steps:
+      - name: RunCheckout 
+        uses: actions/checkout@v4
+        #credentials for AWS put in here
+      - name: Configure AWS Credentials
+        uses: aws-actions/configure-aws-credentials@v6.0.0
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: ${{ secrets.AWS_SECRET_REGION }}
+      # - name: Deploy CloudFormation stack
+      #   run: |
+      #     aws cloudformation deploy \
+      #       --template-file infrastructure/template.yaml \
+      #       --stack-name my-demo-stack 
+      - name: Deploy to AWS CloudFormation
+        uses: aws-actions/aws-cloudformation-github-deploy@v2.0.0
+        with:
+          name: learnGlueCloudCICD
+          template: Templates/LambdaCreation.yaml
 
+  dev-deploy:
+    runs-on: ubuntu-latest #considering OS of AWS
+    environment: Dev
     steps:
       - name: RunCheckout 
         uses: actions/checkout@v4
