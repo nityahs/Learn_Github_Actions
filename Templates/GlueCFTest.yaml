@@ -24,13 +24,13 @@ Resources:
               - Effect: Allow
                 Action: s3:*
                 Resource: '*'
-  MyGlueFunc:
+  MytestGlueFunc:
     Type: AWS::Glue::Job
     Properties:
       Command:
         Name: glueetl
         PythonVersion: "3.9"
-        ScriptLocation: "s3://cloudformation-template-nitya/LambdaPythonScripts/gluetest.py"
+        ScriptLocation: "s3://cloudformation-template-nitya/LambdaPythonScripts/index.py"
       WorkerType: G.1X 
       NumberOfWorkers: 2
       Timeout: 10
@@ -40,4 +40,5 @@ Resources:
       GlueVersion: "5.0"
       Name: nitya-gluetest
       Role: !Ref MyJobRole
+
 
