@@ -33,7 +33,7 @@ jobs:
       - name: Deploy to AWS CloudFormation
         uses: aws-actions/aws-cloudformation-github-deploy@v2.0.0
         with:
-          name: learnGlueCloudCICD
+          name: TestCloudCICD
           template: Templates/LambdaCreation.yaml
 
   dev-deploy:
@@ -57,7 +57,7 @@ jobs:
       - name: Deploy to AWS CloudFormation
         uses: aws-actions/aws-cloudformation-github-deploy@v2.0.0
         with:
-          name: learnGlueCloudCICD
+          name: DevCloudCICD
           template: Templates/LambdaCreation.yaml
   # deploy:
   #   runs-on: ubuntu-latest
