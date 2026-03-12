@@ -38,5 +38,6 @@ Resources:
         MaxConcurrentRuns: 10 
       MaxRetries: 1
       GlueVersion: "5.0"
-      Name: cf-job1-nits
+      Name: nitya-gluetest
       Role: !Ref MyJobRole
+
