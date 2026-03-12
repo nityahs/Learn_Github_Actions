@@ -37,6 +37,7 @@ Resources:
       Code:
         S3Bucket: cloudformation-template-nitya
         S3Key: LambdaPythonScripts/index.zip
+      # the given vpc config was designed in accordance to lambda and contains sample value rather than og values
       # VpcConfig:
       #   SecurityGroupIds:
       #     - sg-0ee8b9ce60f4a7599
