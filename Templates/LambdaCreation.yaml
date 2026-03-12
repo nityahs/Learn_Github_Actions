@@ -1,0 +1,48 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Resources:
+  MyLambdaRole:
+    Type: AWS::IAM::Role
+    Properties:
+      AssumeRolePolicyDocument:
+        Version: '2012-10-17'
+        Statement:
+          - Effect: Allow
+            Principal:
+              Service:
+                - lambda.amazonaws.com
+            Action:
+              - sts:AssumeRole
+      Path: /
+      Policies:
+        - PolicyName: root
+          PolicyDocument:
+            Version: '2012-10-17'
+            Statement:
+              - Effect: Allow
+                Action:
+                # - glue:*
+                - logs:CreateLogGroup
+                - logs:CreateLogStream
+                - logs:PutLogEvents
+                - s3:GetObject
+                - s3:PutObject
+                - s3:ListBucket
+                Resource: '*'
+  MyLambdaFunc:
+    Type: AWS::Lambda::Function
+    Properties:
+      Role: !GetAtt MyLambdaRole.Arn
+      Handler: index.Handler
+      Runtime: python3.11
+      Code:
+        S3Bucket: cloudformation-template-nitya
+        S3Key: LambdaPythonScripts/index.zip
+      # VpcConfig:
+      #   SecurityGroupIds:
+      #     - sg-0ee8b9ce60f4a7599
+      #   SubnetIds:
+      #     - subnet-0635f34855417228e
+      #     - subnet-0b28437c8aae35364
+
+
+      MemorySize: 200
