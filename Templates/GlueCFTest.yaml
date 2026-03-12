@@ -1,0 +1,42 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Description: CloudFormation and IAM created, description is to test GitHub actions put to use.
+Resources:
+  MyJobRole:
+    Type: AWS::IAM::Role
+    Properties:
+      AssumeRolePolicyDocument:
+        Version: '2012-10-17'
+        Statement:
+          - Effect: Allow
+            Principal:
+              Service:
+                - glue.amazonaws.com
+            Action:
+              - sts:AssumeRole
+      ManagedPolicyArns:
+      - arn:aws:iam::aws:policy/service-role/AWSGlueServiceRole
+      Path: /
+      Policies:
+        - PolicyName: root
+          PolicyDocument:
+            Version: '2012-10-17'
+            Statement:
+              - Effect: Allow
+                Action: s3:*
+                Resource: '*'
+  MyGlueFunc:
+    Type: AWS::Glue::Job
+    Properties:
+      Command:
+        Name: glueetl
+        PythonVersion: "3.9"
+        ScriptLocation: "s3://cloudformation-template-nitya/LambdaPythonScripts/gluetest.py"
+      WorkerType: G.1X 
+      NumberOfWorkers: 2
+      Timeout: 10
+      ExecutionProperty:
+        MaxConcurrentRuns: 10 
+      MaxRetries: 1
+      GlueVersion: "5.0"
+      Name: cf-job1-nits
+      Role: !Ref MyJobRole
