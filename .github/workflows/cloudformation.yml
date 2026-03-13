@@ -34,7 +34,7 @@ jobs:
         uses: aws-actions/aws-cloudformation-github-deploy@v2.0.0
         with:
           name: TestCloudCICD
-          template: Templates/LambdaCreation.yaml
+          template: Templates/GlueCFTest.yaml
 
   dev-deploy:
     runs-on: ubuntu-latest #considering OS of AWS
@@ -58,7 +58,7 @@ jobs:
         uses: aws-actions/aws-cloudformation-github-deploy@v2.0.0
         with:
           name: DevCloudCICD
-          template: Templates/LambdaCreation.yaml
+          template: Templates/GlueCFTest.yaml
   # deploy:
   #   runs-on: ubuntu-latest
   #   environment: Test
