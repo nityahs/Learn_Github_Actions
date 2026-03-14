@@ -5,8 +5,10 @@ name: CloudFormation Push Check
 on:
   push:
     branches: [ "main" ]
+    paths: ["Template/GlueTemplates/**"]
   pull_request:
     branches: [ "main" ]
+    paths: ["Template/GlueTemplates/**"]
 
 
 # A workflow run is made up of one or more jobs that can run sequentially or in parallel
