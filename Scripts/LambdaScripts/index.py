@@ -1,1 +1,2 @@
-print("Lambda Script Through GitHub")
+def handler(event,context):
+  print("Lambda Script Through GitHub")
