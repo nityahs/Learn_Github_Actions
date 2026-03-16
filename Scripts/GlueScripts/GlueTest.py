@@ -1,1 +1,1 @@
-print("Testing Glue Function")
+print("Testing Glue Function via GitHub actions")
