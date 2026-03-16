@@ -1,6 +1,6 @@
 #Creating folder structure for workflow management
 AWSTemplateFormatVersion: '2010-09-09'
-Description: CloudFormation and IAM created, description is to test GitHub actions put to use.
+Description: Cloud Formation template made by the means of github actions
 Resources:
   MyJobRole:
     Type: AWS::IAM::Role
@@ -38,7 +38,7 @@ Resources:
       ExecutionProperty:
         MaxConcurrentRuns: 10 
       MaxRetries: 1
-      GlueVersion: "5.0"
+      GlueVersion: "4.0"
       Name: nitya-gluetest
       Role: !Ref MyJobRole
 
