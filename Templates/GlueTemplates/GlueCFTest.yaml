@@ -1,5 +1,5 @@
 #Work for environment setup and glue sync
-#path check
+#Working well
 AWSTemplateFormatVersion: '2010-09-09'
 Description: Cloud Formation template made by the means of github actions
 Resources:
