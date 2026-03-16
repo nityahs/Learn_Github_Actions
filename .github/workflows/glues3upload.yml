@@ -3,7 +3,8 @@ on:
   push:
     branches:
       - main
-    paths: Templates/GlueTemplates
+    paths: 
+      - Templates/GlueTemplates
 jobs:
   deploy:
     runs-on: ubuntu-latest #considering OS of AWS
