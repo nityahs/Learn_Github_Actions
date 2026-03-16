@@ -21,4 +21,4 @@ jobs:
           aws-region: ${{ secrets.AWS_SECRET_REGION }}
       - name: upload new python files to glue path
         run: |
-          aws s3 sync Template/GlueTemplates/ s3://cloudformation-template-nitya/LambdaPythonScripts/
+          aws s3 sync Scripts/GlueScripts/ s3://cloudformation-template-nitya/LambdaPythonScripts/
