@@ -1,33 +1,29 @@
-name: dev-etl-pipeline-nitya-intern
-
+name: devops-elt-nitya-intern
 on:
   pull_request:
     types:
       - closed
     branches:
-      - interns-fork
+      - interns-main
 jobs:
-  cf-validate-temp-nitya:
-    # if: |
-    #   github.event.pull_request.merged == true 
-
+  cloudformation-validation-nitya:
     runs-on: ubuntu-latest
-    steps:
-    - name: Code checkout from github repo
-      uses: actions/checkout@v4
-
-    - name: Setup cloudformation linter
-      uses: ScottBrenner/cfn-lint-action@v2.4.4
-      
-    - name: Validate cloudformation templates using linter
-      run: |
-        cfn-lint --version
-        cfn-lint intern/nitya/infrastructure/orch-elt*.yml
-  dev-kna-elt-nitya-job:
     environment: dev-kna
-    runs-on: ubuntu-latest
-    needs: [cf-validate-temp-nitya]
+    steps:
+      - name: Code checkout from github repo
+        uses: actions/checkout@v4
 
+      - name: Setup cloudformation linter
+        uses: scottbrenner/cfn-lint-action@v2
+
+      - name: Validate cloudformation templates using linter
+        run: |
+          cfn-lint --version
+          cfn-lint infrastructure/elt-glue-jobs-cfn.yml
+          cfn-lint infrastructure/elt-sqs-cfn.yml
+  dev-kna-etl-pipeline-run:
+    runs-on: ubuntu-latest
+    environment: dev-kna
     steps:
       - name: Code checkout from github repo
         uses: actions/checkout@v4
@@ -38,12 +34,77 @@ jobs:
           aws-region: us-east-1
           role-to-assume: ${{secrets.CICD_ASSUME_ROLE}}
           role-session-name: GitHubRoleSession
-      - name: Create SQS for extracting metadata of newly uploaded file
-        uses: aws-actions/aws-cloudformation-github-deploy@v2.0.0
+      - name: Zip lambda script that extract metadata and load
+        run: |
+          mkdir -p interns/nitya/scripts/lambda/build
+          zip  interns/nitya/scripts/lambda/build/dev_kna_extractload_nitya_intern.zip \
+                interns/nitya/scripts/lambda/dev_kna_extractload_nitya_intern.py
+      - name: Zip lambda script that fetches row
+        run: |
+          mkdir -p interns/nitya/scripts/lambda/build
+          zip  interns/nitya/scripts/lambda/build/dev_kna_rowfetch_nitya_intern.zip \
+                interns/nitya/scripts/lambda/dev_kna_rowfetch_nitya_intern.py
+      - name: Zip lambda script that performs pre-processing
+        run: |
+          mkdir -p interns/nitya/scripts/lambda/build
+          zip  interns/nitya/scripts/lambda/build/dev_kna_processor_nitya_intern.zip \
+                interns/nitya/scripts/lambda/dev_kna_processor_nitya_intern.py
+      - name: Zip psycopg2 layer
+        run: |
+          cd interns/nitya/scripts/lambda/layers/psycopg2-nitya
+          zip -r ../lambdazip-nitya/psycopg2-nitya.zip python
+      - name: Zip preproc layer
+        run: |
+          cd interns/nitya/scripts/lambda/layers/preproc-nitya
+          zip -r ../lambdazip-nitya/preproc-nitya.zip python  
+      - name: Upload lambda scripts to S3
+        run: |
+          aws s3 cp interns/nitya/scripts/lambda/build/dev_kna_extractload_nitya_intern.zip \
+                    s3://klg-nga-dev-kna-raw-intrnl/intern_2025/nitya/Lambda_Scripts/
+          aws s3 cp interns/nitya/scripts/lambda/build/dev_kna_rowfetch_nitya_intern.zip \
+                    s3://klg-nga-dev-kna-raw-intrnl/intern_2025/nitya/Lambda_Scripts/
+          aws s3 cp interns/nitya/scripts/lambda/build/dev_kna_processor_nitya_intern.zip \
+                    s3://klg-nga-dev-kna-raw-intrnl/intern_2025/nitya/Lambda_Scripts/  
+      - name: Upload lambda layers to S3
+        run: |
+          aws s3 cp interns/nitya/scripts/lambda/layers/lambdazip-nitya/psycopg2-nitya.zip \
+                    s3://klg-nga-dev-kna-raw-intrnl/intern_2025/nitya/Lambda_Scripts/Layers/ 
+          aws s3 cp interns/nitya/scripts/lambda/layers/lambdazip-nitya/preproc-nitya.zip \
+                    s3://klg-nga-dev-kna-raw-intrnl/intern_2025/nitya/Lambda_Scripts/Layers/ 
+      # - name: Create psycopg2 LambdaLayer
+      #   uses: aws-actions/aws-cloudformation-github-deploy@v1
+      #   with:
+      #     name: dev-kna-psycopg2layer-nitya-intern
+      #     template: interns/nitya/infrastructure/eltinfra-layercf-nitya-intern.yaml
+      #     no-fail-on-empty-changeset: true
+      #     role-arn: ${{secrets.CICD_EXECUTION_ROLE}}
+      #     parameter-overrides: |
+      #       LayerName: psycopg2-nitya
+      #       Filekey: intern_2025/nitya/Lambda_Scripts/Layers/psycopg2-nitya.zip
+      # - name: Create preproc LambdaLayer
+      #   uses: aws-actions/aws-cloudformation-github-deploy@v1
+      #   with:
+      #     name: dev-kna-preproclayer-nitya-intern
+      #     template: interns/nitya/infrastructure/eltinfra-layercf-nitya-intern.yaml
+      #     no-fail-on-empty-changeset: true
+      #     role-arn: ${{secrets.CICD_EXECUTION_ROLE}}
+      #     parameter-overrides: |
+      #       LayerName: preproc-nitya
+      #       Filekey: intern_2025/nitya/Lambda_Scripts/Layers/preproc-nitya.zip
+      - name: Cloudformation for SQS Data Fetch
+        uses: aws-actions/aws-cloudformation-github-deploy@v1
         with:
-          name: dev-kna-datafetchSQS-nitya-intern
+          name: dev-kna-eltinfrasqscf-nitya-intern
           template: interns/nitya/infrastructure/eltinfra-sqs-nitya-intern.yaml
-      - name: zip the incoming python file for lambda
-      
-          
+          no-fail-on-empty-changeset: true
+          role-arn: ${{secrets.CICD_EXECUTION_ROLE}}
+      - name: Cloudformation for all lambda and layers
+        uses: aws-actions/aws-cloudformation-github-deploy@v1
+        with:
+          name: dev-kna-etlinfralmdcf-nitya-intern
+          template: interns/nitya/infrastructure/eltinfra-lambda-nitya-intern.yaml
+          parameter-overrides: secret_key=${{secrets.SECRET_KEY_NAME}}
+          no-fail-on-empty-changeset: true
+          role-arn: ${{secrets.CICD_EXECUTION_ROLE}}          
+        
     
