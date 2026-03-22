@@ -1,14 +1,12 @@
 name: devops-elt-nitya-intern
 on:
-  pull_request:
-    types:
-      - closed
+  push: 
     branches:
-      - interns-main
+      - main
 jobs:
   cloudformation-validation-nitya:
     runs-on: ubuntu-latest
-    environment: dev-kna
+
     steps:
       - name: Code checkout from github repo
         uses: actions/checkout@v4
@@ -19,30 +17,32 @@ jobs:
       - name: Validate cloudformation templates using linter
         run: |
           cfn-lint --version
-          cfn-lint infrastructure/elt-glue-jobs-cfn.yml
-          cfn-lint infrastructure/elt-sqs-cfn.yml
+          cfn-lint interns/nitya/infrastructure/eltinfra-lambda-nitya-intern.yaml
+          cfn-lint interns/nitya/infrastructure/eltinfra-sqs-nitya-intern.yaml
+          cfn-lint interns/nitya/infrastructure/orch-iceberg-glue-nitya-intern.yaml
+          cfn-lint interns/nitya/infrastructure/orch-sf-cfn-nitya-intern.yaml
   dev-kna-etl-pipeline-run:
     runs-on: ubuntu-latest
-    environment: dev-kna
+
     steps:
       - name: Code checkout from github repo
         uses: actions/checkout@v4
 
-      - name: Configure AWS credentials
-        uses: aws-actions/configure-aws-credentials@v4
+      - name: Configure AWS Credentials
+        uses: aws-actions/configure-aws-credentials@v6.0.0
         with:
-          aws-region: us-east-1
-          role-to-assume: ${{secrets.CICD_ASSUME_ROLE}}
-          role-session-name: GitHubRoleSession
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: ${{ secrets.AWS_SECRET_REGION }}
 
       - name: Upload glue script to S3
         run: |
           aws s3 cp interns/nitya/scripts/glue/dev_kna_icebergglue_nitya_intern.py \
-                    s3://klg-nga-dev-kna-raw-intrnl/intern_2025/nitya/Glue_Scripts/
+                    s3://klg-nga-dev-kna-raw-intrnl-nitya/intern_2025/nitya/Glue_Scripts/
       - name: Upload stepfunction script to S3
         run: |
           aws s3 cp interns/nitya/statemachines/dev_orch_intern_t7procsf_nitya.yaml \
-                    s3://klg-nga-dev-kna-raw-intrnl/intern_2025/nitya/StepFormationYAML/
+                    s3://klg-nga-dev-kna-raw-intrnl-nitya/intern_2025/nitya/StepFormationYAML/
                     
       - name: Cloudformation for SNS Data Fetch
         uses: aws-actions/aws-cloudformation-github-deploy@v1
@@ -50,29 +50,27 @@ jobs:
           name: dev-kna-sfsns-nitya-intern
           template: interns/nitya/infrastructure/orch-sf-sns-nitya-intern.yaml
           no-fail-on-empty-changeset: true
-          role-arn: ${{secrets.CICD_EXECUTION_ROLE}}
 
       - name: CloudFormation for IcebergTable Glue
         uses: aws-actions/aws-cloudformation-github-deploy@v1
         with:
           name: dev-kna-orch-icebergglue-nitya-intern
           template: interns/nitya/infrastructure/orch-iceberg-glue-nitya-intern.yaml
-          parameter-overrides: secret_key=${{secrets.SECRET_KEY_NAME}}
+          parameter-overrides: secret_key=${{ secrets.AWS_SECRET_ACCESS_KEY }}
           no-fail-on-empty-changeset: true
-          role-arn: ${{secrets.CICD_EXECUTION_ROLE}}
       - name: Cloudformation for StepFunction
         uses: aws-actions/aws-cloudformation-github-deploy@v1
         with:
           name: dev-kna-sf-cfn-nitya-intern
           template: interns/nitya/infrastructure/orch-sf-cfn-nitya-intern.yaml
           no-fail-on-empty-changeset: true
-          role-arn: ${{secrets.CICD_EXECUTION_ROLE}}
+
       - name: Cloudformation for all lambda and layers
         uses: aws-actions/aws-cloudformation-github-deploy@v1
         with:
           name: dev-kna-etlinfralmdcf-nitya-intern
           template: interns/nitya/infrastructure/eltinfra-lambda-nitya-intern.yaml
-            secret_key=${{secrets.SECRET_KEY_NAME}}
+            secret_key=${{ secrets.AWS_SECRET_ACCESS_KEY }}
             SFArn-nitya=dev-kna-orch-icebergglue-nitya-intern
           no-fail-on-empty-changeset: true
-          role-arn: ${{secrets.CICD_EXECUTION_ROLE}} 
+  
