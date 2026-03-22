@@ -1,0 +1,49 @@
+name: dev-etl-pipeline-nitya-intern
+
+on:
+  pull_request:
+    types:
+      - closed
+    branches:
+      - interns-fork
+jobs:
+  cf-validate-temp-nitya:
+    # if: |
+    #   github.event.pull_request.merged == true 
+
+    runs-on: ubuntu-latest
+    steps:
+    - name: Code checkout from github repo
+      uses: actions/checkout@v4
+
+    - name: Setup cloudformation linter
+      uses: ScottBrenner/cfn-lint-action@v2.4.4
+      
+    - name: Validate cloudformation templates using linter
+      run: |
+        cfn-lint --version
+        cfn-lint intern/nitya/infrastructure/orch-elt*.yml
+  dev-kna-elt-nitya-job:
+    environment: dev-kna
+    runs-on: ubuntu-latest
+    needs: [cf-validate-temp-nitya]
+
+    steps:
+      - name: Code checkout from github repo
+        uses: actions/checkout@v4
+
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          aws-region: us-east-1
+          role-to-assume: ${{secrets.CICD_ASSUME_ROLE}}
+          role-session-name: GitHubRoleSession
+      - name: Create SQS for extracting metadata of newly uploaded file
+        uses: aws-actions/aws-cloudformation-github-deploy@v2.0.0
+        with:
+          name: dev-kna-datafetchSQS-nitya-intern
+          template: interns/nitya/infrastructure/eltinfra-sqs-nitya-intern.yaml
+      - name: zip the incoming python file for lambda
+      
+          
+    
