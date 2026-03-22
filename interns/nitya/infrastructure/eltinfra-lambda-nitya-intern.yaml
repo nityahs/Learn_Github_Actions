@@ -1,0 +1,138 @@
+AWSTemplateFormatVersion: 2010-09-09
+Description: Lambda Flexible to be used across
+Parameters:
+  SecretKey:
+    NoEcho: True
+    Type: String
+  SFArn-nitya:
+    Type: String
+    Default: ""
+Resources:
+  Psycopg2Layer:
+    Type: AWS::Lambda::LayerVersion
+    Properties:
+      LayerName: kna-dev-psycopg2-nitya
+      Description: psycopg2
+      Content:
+        S3Bucket: klg-nga-dev-kna-raw-intrnl
+        S3Key: intern_2025/nitya/Lambda_Scripts/Layers/psycopg2-nitya.zip
+      CompatibleRuntimes: python3.11
+  PreprocLayer:
+    Type: AWS::Lambda::LayerVersion
+    Properties:
+      LayerName: kna-dev-preproc-nitya
+      Description: contains layers for preprocessing steps like copying, data-connection, unzipping, flattening and archiving
+      Content:
+        S3Bucket: klg-nga-dev-kna-raw-intrnl
+        S3Key: intern_2025/nitya/Lambda_Scripts/Layers/preproc-nitya.zip
+      CompatibleRuntimes: python3.11
+  ELTInfraLambdaNitya:
+    Type: AWS::Lambda::Function
+    Properties:
+      Architechture: x86_64
+      Handler: dev_kna_extractload_nitya_intern.lambda_handler
+      Role: arn:aws:iam::953495608177:role/nga-dev-elt-lambda-service-role
+      Code:
+        S3Bucket: klg-nga-dev-kna-raw-intrnl
+        S3Key: intern_2025/nitya/Lambda_Scripts/dev_kna_extractload_nitya_intern.zip
+      Runtime: python3.11
+      Timeout: 300
+      Layers:
+        - !GetAtt PreprocLayer.Arn
+        - arn:aws:lambda:us-east-1:336392948345:layer:AWSSDKPandas-Python311:25
+        - !IGetAtt Psycopg2Layer.Arn
+      MemorySize: 512
+      EphemeralStorage:
+        Size: 512
+      Environment:
+        Variables:
+          SecretKey: !Ref SecretKey
+          QueueURL: !ImportValue fetchdatasqsnitya-url
+      VpcConfig:
+        SecurityGroupIds:
+          - sg-0ee8b9ce60f4a7599
+        SubnetIds:
+          - subnet-0b28437c8aae35364 
+          - subnet-0635f34855417228e
+  OrchRowFetchLambdaNitya:
+    Type: AWS::Lambda::Function
+    Properties:
+      Architechture: x86_64
+      Handler: dev_kna_rowfetch_nitya_intern.lambda_handler
+      Role: arn:aws:iam::953495608177:role/nga-dev-elt-lambda-service-role
+      Code:
+        S3Bucket: klg-nga-dev-kna-raw-intrnl
+        S3Key: intern_2025/nitya/Lambda_Scripts/dev_kna_rowfetch_nitya_intern.zip
+      Runtime: python3.11
+      Timeout: 300
+      Layers:
+        - !GetAtt PreprocLayer.Arn
+        - arn:aws:lambda:us-east-1:336392948345:layer:AWSSDKPandas-Python311:25
+        - !IGetAtt Psycopg2Layer.Arn
+      MemorySize: 512
+      EphemeralStorage:
+        Size: 512
+      Environment:
+        Variables:
+          SecretKey: !Ref SecretKey
+      VpcConfig:
+        SecurityGroupIds:
+          - sg-0ee8b9ce60f4a7599
+        SubnetIds:
+          - subnet-0b28437c8aae35364 
+          - subnet-0635f34855417228e
+  OrchPreProcLambdaNitya:
+    Type: AWS::Lambda::Function
+    Properties:
+      Architechture: x86_64
+      Handler: dev_kna_processor_nitya_intern.lambda_handler
+      Role: arn:aws:iam::953495608177:role/nga-dev-elt-lambda-service-role
+      Code:
+        S3Bucket: klg-nga-dev-kna-raw-intrnl
+        S3Key: intern_2025/nitya/Lambda_Scripts/dev_kna_processor_nitya_intern.zip
+      Runtime: python3.11
+      Timeout: 300
+      Layers:
+        - !GetAtt PreprocLayer.Arn
+        - arn:aws:lambda:us-east-1:336392948345:layer:AWSSDKPandas-Python311:25
+        - !IGetAtt Psycopg2Layer.Arn
+      MemorySize: 512
+      EphemeralStorage:
+        Size: 512
+      Environment:
+        Variables:
+          SecretKey: !Ref SecretKey
+      VpcConfig:
+        SecurityGroupIds:
+          - sg-0ee8b9ce60f4a7599
+        SubnetIds:
+          - subnet-0b28437c8aae35364 
+          - subnet-0635f34855417228e 
+  SFTrigLambdaNitya:
+    Type: AWS::Lambda::Function
+    Properties:
+      Architechture: x86_64
+      Handler: dev_kna_processor_nitya_intern.lambda_handler
+      Role: arn:aws:iam::953495608177:role/nga-dev-elt-lambda-service-role
+      Code:
+        S3Bucket: klg-nga-dev-kna-raw-intrnl
+        S3Key: intern_2025/nitya/Lambda_Scripts/dev_kna_sftrig_nitya_intern.zip
+      Runtime: python3.11
+      Timeout: 300
+      Layers:
+        - !GetAtt PreprocLayer.Arn
+        - arn:aws:lambda:us-east-1:336392948345:layer:AWSSDKPandas-Python311:25
+        - !IGetAtt Psycopg2Layer.Arn
+      MemorySize: 512
+      EphemeralStorage:
+        Size: 512
+      Environment:
+        Variables:
+          SecretKey: !Ref SecretKey
+          SFArn-nitya: !Sub arn:aws:states:us-east-1:953495608177:stateMachine:${SFArn-nitya}
+      VpcConfig:
+        SecurityGroupIds:
+          - sg-0ee8b9ce60f4a7599
+        SubnetIds:
+          - subnet-0b28437c8aae35364 
+          - subnet-0635f34855417228e 
