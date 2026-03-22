@@ -1,0 +1,35 @@
+Description: "AWS Glue Job Test"
+Resources:
+Parameters:
+  SecretKey:
+    NoEcho: True
+    Type: String
+#iam arn: arn:aws:iam::953495608177:role/nga-dev-elt-glue-service-role 
+  IcebergGlue:
+    Type: AWS::Glue::Job
+    Properties:
+      Command:
+        Name: glueetl
+        PythonVersion: 3.9
+        ScriptLocation: "s3://klg-nga-dev-kna-raw-intrnl/intern_2025/nitya/Glue_Scripts/dev_kna_icebergglue_nitya_intern.py"
+      DefaultArguments:
+        "--job-bookmark-option": "job-bookmark-enable"
+      ExecutionProperty:
+        MaxConcurrentRuns: 10
+      MaxRetries: 0
+      Name: dev-kna-orch-icebergglue-nitya-intern
+      Role: arn:aws:iam::953495608177:role/nga-dev-elt-glue-service-role
+      NumberOfWorkers: 2
+      Timeout: 10
+      WorkerType: G.1X
+      Connections:
+        Connections: 
+          - nga_npd_vpc
+      DefaultArguments:
+        "--enable-metrics": ""
+        "--conf": "spark.eventLog.rolling.enabled=true"
+        "--port": 5700
+        "--datalake-formats": "iceberg"
+        "--secret_key": !Ref SecretKey
+        "--additional-python-modules": "psycopg2-binary==2.9.9"
+        

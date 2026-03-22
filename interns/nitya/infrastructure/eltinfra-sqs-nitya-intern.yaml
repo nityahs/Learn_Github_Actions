@@ -1,0 +1,47 @@
+  AWSTemplateFormatVersion: "2010-09-09"
+  Description: Cloud formation here creates SQS and Lambda for processing incoming data
+  Resources:
+    fetchdatasqsnityaintern:
+      Type: AWS::SQS::Queue
+      Properties:
+        QueueName: dev-kna-fetchdatasqs-nitya-intern
+        VisibilityTimeout: 60
+    fetchdatasqsaccesspolicy:
+      Type: AWS::SQS::QueuePolicy
+      Properties:
+        Queue: 
+          - !Ref fetchdatasqsnityaintern
+        PolicyDocument:
+          Version: 2008-10-17
+          Id: SQSAccessPolicy
+          Statement:
+            - Sid: "AllowAll"
+              Effect: "Allow"
+              Principal: "*"
+              Action: "sqs:*"
+              Resource: !GetAtt fetchdatasqsnityaintern.Arn
+    S3notifsnitya:
+      Type: AWS::Events::Rule
+      Properties:
+        Name: kna-dev-sqspubeb-nitya-intern
+        EventPattern:
+          source:
+            - aws.s3
+          detail:
+            bucket:
+              name:
+                - klg-nga-dev-kna-raw-intrnl
+            object:
+              key:
+                prefix: intern_2025/nitya/Land/
+        Targets:
+          Arn: !GetAtt fetchdatasqsnityaintern.Arn
+Outputs:
+  QueueUrl:
+    Value: !Ref fetchdatasqsnityaintern
+    Export:
+      Name: fetchdatasqsnitya-url
+  QueueArn:
+    Value: !GetAtt fetchdatasqsnityaintern.Arn
+    Export:
+      Name: fetchdatasqsnitya-arn

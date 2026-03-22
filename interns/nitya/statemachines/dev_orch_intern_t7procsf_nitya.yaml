@@ -1,0 +1,282 @@
+{
+  "StartAt": "Start Mail",
+  "States": {
+    "Start Mail": {
+      "Type": "Task",
+      "Resource": "arn:aws:states:::sns:publish",
+      "Arguments": {
+        "TopicArn": "arn:aws:sns:us-east-1:953495608177:dev_kna_t1notifsns_intern_nitya",
+        "Message": {
+          "FunctionName": "{% $states.context.StateMachine.Id  \n %}",
+          "Time": "{% $now()  \n %}",
+          "State": "{% $states.context.State.Name  \n%}",
+          "ExecutionID": "{% $states.context.Execution.Id  \n%}"
+        },
+        "Subject": "{% 'Started Step Function:' & $split($states.context.Execution.Id, ':')[-2] & ':'&$split($states.context.Execution.Id, ':')[-1]  %}"
+      },
+      "Next": "FetchData",
+      "Catch": [
+        {
+          "ErrorEquals": [
+            "States.ALL"
+          ],
+          "Output": {
+            "ProcessName": "StartMail",
+            "Error": "{%$states.errorOutput%}"
+          },
+          "Next": "FailureMail"
+        }
+      ],
+      "Output": {
+        "ExecutionId": "{% $split($states.context.Execution.Id, ':')[-1] %}"
+      }
+    },
+    "FailureMail": {
+      "Type": "Task",
+      "Resource": "arn:aws:states:::sns:publish",
+      "Arguments": {
+        "TopicArn": "arn:aws:sns:us-east-1:953495608177:dev_kna_t1notifsns_intern_nitya",
+        "Message": {
+          "FunctionName": "{% $states.context.StateMachine.Id  \n %}",
+          "Time": "{% $now()  \n %}",
+          "State": "{% $states.context.State.Name  \n%}",
+          "ExecutionID": "{% $states.context.Execution.Id  \n%}",
+          "ProcessName": "{% $states.input.ProcessName %}",
+          "Error": "{% $states.input.Error %}"
+        },
+        "Subject": "{% 'Failure in Step Function:' & $split($states.context.Execution.Id, ':')[-2] & ':'&$split($states.context.Execution.Id, ':')[-1]  %}"
+      },
+      "Next": "End Mail",
+      "Output": "{% $states.input%}",
+      "Retry": [
+        {
+          "ErrorEquals": [
+            "States.ALL"
+          ],
+          "BackoffRate": 2,
+          "IntervalSeconds": 1,
+          "MaxAttempts": 3
+        }
+      ],
+      "Catch": [
+        {
+          "ErrorEquals": [
+            "States.ALL"
+          ],
+          "Next": "End Mail",
+          "Output": {
+            "ProcessName": "FetchData",
+            "Error": "{%$states.errorOutput%}"
+          }
+        }
+      ]
+    },
+    "FetchData": {
+      "Type": "Task",
+      "Resource": "arn:aws:states:::lambda:invoke",
+      "Output": "{% $states.result.Payload %}",
+      "Arguments": {
+        "FunctionName": "arn:aws:lambda:us-east-1:953495608177:function:dev_kna_rowfetch_nitya_intern:$LATEST",
+        "Payload": "{% $states.input %}"
+      },
+      "Retry": [
+        {
+          "ErrorEquals": [
+            "Lambda.ServiceException",
+            "Lambda.AWSLambdaException",
+            "Lambda.SdkClientException",
+            "Lambda.TooManyRequestsException",
+            "States.Timeout"
+          ],
+          "IntervalSeconds": 1,
+          "MaxAttempts": 3,
+          "BackoffRate": 2,
+          "JitterStrategy": "FULL"
+        }
+      ],
+      "Next": "Map",
+      "Catch": [
+        {
+          "ErrorEquals": [
+            "States.ALL"
+          ],
+          "Next": "FailureMail",
+          "Comment": "Error in Fetchdata",
+          "Output": {
+            "ProcessName": "FetchData",
+            "Error": "{%$states.errorOutput%}"
+          }
+        }
+      ]
+    },
+    "Map": {
+      "Type": "Map",
+      "ItemProcessor": {
+        "ProcessorConfig": {
+          "Mode": "INLINE"
+        },
+        "StartAt": "DocProcessor",
+        "States": {
+          "DocProcessor": {
+            "Type": "Task",
+            "Resource": "arn:aws:states:::lambda:invoke",
+            "Output": "{% $states.result.Payload%}",
+            "Arguments": {
+              "FunctionName": "arn:aws:lambda:us-east-1:953495608177:function:dev_kna_rdsscheduler_intern_nitya:$LATEST",
+              "Payload": "{% $states.input %}"
+            },
+            "Retry": [
+              {
+                "ErrorEquals": [
+                  "Lambda.ServiceException",
+                  "Lambda.AWSLambdaException",
+                  "Lambda.SdkClientException",
+                  "Lambda.TooManyRequestsException",
+                  "States.Timeout"
+                ],
+                "IntervalSeconds": 1,
+                "MaxAttempts": 3,
+                "BackoffRate": 2,
+                "JitterStrategy": "FULL"
+              }
+            ],
+            "Catch": [
+              {
+                "ErrorEquals": [
+                  "States.ALL"
+                ],
+                "Next": "ProcFailureMail",
+                "Output": {
+                  "ProcessName": "DocProcessor",
+                  "Error": "{%$states.errorOutput%}"
+                }
+              }
+            ],
+            "Next": "Glue StartJobRun"
+          },
+          "Glue StartJobRun": {
+            "Type": "Task",
+            "Resource": "arn:aws:states:::glue:startJobRun.sync",
+            "Arguments": {
+              "JobName": "dev_kna_icebergglue_nitya_intern",
+              "Arguments": {
+                "--subject": "{% $states.input.subject %}"
+              }
+            },
+            "End": true,
+            "Retry": [
+              {
+                "ErrorEquals": [
+                  "States.Timeout"
+                ],
+                "BackoffRate": 2,
+                "IntervalSeconds": 1,
+                "MaxAttempts": 3
+              }
+            ],
+            "Catch": [
+              {
+                "ErrorEquals": [
+                  "States.ALL"
+                ],
+                "Next": "ProcFailureMail",
+                "Output": {
+                  "ProcessName": "IcebergGlue",
+                  "Error": "{%$states.errorOutput%}"
+                }
+              }
+            ],
+            "Output": "{% $states.input %}"
+          },
+          "ProcFailureMail": {
+            "Type": "Task",
+            "Resource": "arn:aws:states:::sns:publish",
+            "Arguments": {
+              "TopicArn": "arn:aws:sns:us-east-1:953495608177:dev_kna_t1notifsns_intern_nitya",
+              "Message": {
+                "FunctionName": "{% $states.context.StateMachine.Id  \n %}",
+                "Time": "{% $now()  \n %}",
+                "State": "{% $states.context.State.Name  \n%}",
+                "ExecutionID": "{% $states.context.Execution.Id  \n%}",
+                "ProcessName": "{% $states.input.ProcessName %}",
+                "Error": "{% $states.input.Error %}"
+              },
+              "Subject": "{% 'Failure in Step Function:' & $split($states.context.Execution.Id, ':')[-2] & ':'&$split($states.context.Execution.Id, ':')[-1]  %}"
+            },
+            "Retry": [
+              {
+                "ErrorEquals": [
+                  "States.ALL"
+                ],
+                "BackoffRate": 2,
+                "IntervalSeconds": 1,
+                "MaxAttempts": 3
+              }
+            ],
+            "End": true
+          }
+        }
+      },
+      "Retry": [
+        {
+          "ErrorEquals": [
+            "States.Timeout"
+          ],
+          "BackoffRate": 2,
+          "IntervalSeconds": 1,
+          "MaxAttempts": 3
+        }
+      ],
+      "Catch": [
+        {
+          "ErrorEquals": [
+            "States.ALL"
+          ],
+          "Next": "FailureMail",
+          "Output": {
+            "ProcessName": "Map",
+            "Error": "{%$states.errorOutput%}"
+          }
+        }
+      ],
+      "Next": "End Mail",
+      "MaxConcurrency": 10
+    },
+    "End Mail": {
+      "Type": "Task",
+      "Resource": "arn:aws:states:::sns:publish",
+      "Arguments": {
+        "TopicArn": "arn:aws:sns:us-east-1:953495608177:dev_kna_t1notifsns_intern_nitya",
+        "Message": {
+          "FunctionName": "{% $states.context.StateMachine.Id  \n %}",
+          "Time": "{% $now()  \n %}",
+          "State": "{% $states.context.State.Name  \n%}",
+          "ExecutionID": "{% $states.context.Execution.Id  \n%}",
+          "Status": "{% $states.input %}"
+        },
+        "Subject": "{% 'Ended Step Function:' & $split($states.context.Execution.Id, ':')[-2] & ':'&$split($states.context.Execution.Id, ':')[-1] %}"
+      },
+      "Next": "Success",
+      "Catch": [
+        {
+          "ErrorEquals": [
+            "States.ALL"
+          ],
+          "Output": {
+            "ProcessName": "StartMail",
+            "Error": "{%$states.errorOutput%}"
+          },
+          "Next": "Fail"
+        }
+      ]
+    },
+    "Fail": {
+      "Type": "Fail"
+    },
+    "Success": {
+      "Type": "Succeed"
+    }
+  },
+  "QueryLanguage": "JSONata",
+  "Comment": "State Machine responsible for automated file pre-processing"
+}

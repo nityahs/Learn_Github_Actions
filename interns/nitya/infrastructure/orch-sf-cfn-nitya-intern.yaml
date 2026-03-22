@@ -1,0 +1,33 @@
+#Below are the substitutions for SF's yaml
+# "TopicArn":"${dev-kna-sfsns-nitya-intern-arn}" for sns[all]
+# "FunctionName": "${OrchRowFetchLambdaNitya}", for rowfetch lambda
+# "FunctionName": "${OrchPreProcLambdaNitya}", for docprocessor lambda
+# "JobName": "dev_kna_icebergglue_nitya_intern", -> replaced by
+# "JobName": "${orch-iceberg-glue-nitya-intern}", 
+AWSTemplateFormatVersion: 2010-09-09
+Description: Lambda Flexible to be used across
+Parameters:
+  SNSArn-nitya:
+    Type: String
+  RowfetchLambdaArn-nitya:
+    Type: String
+  PreProcLambdaArn-nitya:
+    Type:String
+  IcebergGlueArn-nitya:
+    Type: String
+Resources:
+  orchstatemachine-nitya:
+    Type: AWS::StepFunctions::StateMachine
+    Properties:
+      StateMachineName: dev_orch_cfnsf_nitya_intern
+      DefinitionS3Location:
+        Bucket: klg-nga-dev-kna-raw-intrnl
+        Key: intern_2025/nitya/StepFormationYAML/dev_orch_intern_t7procsf_nitya.yaml
+      DefinitionSubstitutions:
+        dev-kna-sfsns-nitya-intern-arn: !Ref SNSArn-nitya 
+        OrchRowFetchLambdaNitya: !Ref RowfetchLambdaArn-nitya
+        OrchPreProcLambdaNitya: !Ref PreProcLambdaArn-nitya
+        orch-iceberg-glue-nitya-intern: !Ref IcebergGlueArn-nitya
+      RoleArn: arn:aws:iam::953495608177:role/nga-dev-orch-step-functions-service-role
+      
+  
