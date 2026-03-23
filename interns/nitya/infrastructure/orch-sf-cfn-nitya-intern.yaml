@@ -14,7 +14,7 @@ Parameters:
     Type: String
     Default: arn:aws:lambda:ap-southeast-2:797671034147:function:dev_kna_rowfetch_nitya_intern
   PreProcLambdaArnnitya:
-    Type:String
+    Type: String
     Default: arn:aws:lambda:ap-southeast-2:797671034147:function:dev_kna_processor_nitya_intern
   IcebergGlueArnnitya:
     Type: String
