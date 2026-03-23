@@ -17,7 +17,7 @@ Resources:
         S3Bucket: klg-nga-dev-kna-raw-intrnl-nitya
         S3Key: intern_2025/nitya/Lambda_Scripts/Layers/psycopg2-nitya.zip
       CompatibleRuntimes: 
-        - python 3.11
+        - python3.11
   PreprocLayer:
     Type: AWS::Lambda::LayerVersion
     Properties:
@@ -39,7 +39,7 @@ Resources:
       Code:
         S3Bucket: klg-nga-dev-kna-raw-intrnl-nitya
         S3Key: intern_2025/nitya/Lambda_Scripts/dev_kna_extractload_nitya_intern.zip
-      Runtime: python 3.11
+      Runtime: python3.11
       Timeout: 300
       Layers:
         - !GetAtt PreprocLayer.LayerVersionArn 
@@ -140,9 +140,9 @@ Resources:
         Variables:
           SecretKey: !Ref SecretKey
           SFArnnitya: !Sub arn:aws:states:us-east-1:953495608177:stateMachine:${SFArnnitya}
-      VpcConfig:
-        SecurityGroupIds:
-          - sg-0ee8b9ce60f4a7599
-        SubnetIds:
-          - subnet-0b28437c8aae35364 
-          - subnet-0635f34855417228e 
+      # VpcConfig:
+      #   SecurityGroupIds:
+      #     - sg-0ee8b9ce60f4a7599
+      #   SubnetIds:
+      #     - subnet-0b28437c8aae35364 
+      #     - subnet-0635f34855417228e 
