@@ -28,6 +28,6 @@ Resources:
         OrchRowFetchLambdaNitya: !Ref RowfetchLambdaArn-nitya
         OrchPreProcLambdaNitya: !Ref PreProcLambdaArn-nitya
         orch-iceberg-glue-nitya-intern: !Ref IcebergGlueArn-nitya
-      RoleArn: arn:aws:iam::953495608177:role/nga-dev-orch-step-functions-service-role
+      RoleArn: arn:aws:iam::797671034147:role/ELT-GITHUBROLE-NITYA
       
   
