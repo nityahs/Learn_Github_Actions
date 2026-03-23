@@ -19,8 +19,10 @@ jobs:
       - name: Validate cloudformation templates using linter
         run: |
           cfn-lint --version
-          cfn-lint infrastructure/elt-glue-jobs-cfn.yml
-          cfn-lint infrastructure/elt-sqs-cfn.yml
+          cfn-lint interns/nitya/infrastructure/eltinfra-lambda-nitya-intern.yaml
+          cfn-lint interns/nitya/infrastructure/eltinfra-sqs-nitya-intern.yaml
+          cfn-lint interns/nitya/infrastructure/orch-iceberg-glue-nitya-intern.yaml
+          cfn-lint interns/nitya/infrastructure/orch-sf-cfn-nitya-intern.yaml
   dev-kna-etl-pipeline-run:
     runs-on: ubuntu-latest
     environment: dev-kna
