@@ -32,7 +32,8 @@ Resources:
     Type: AWS::Lambda::Function
     Properties:
       FunctionName: dev_kna_extractload_nitya_intern
-      Architectures: x86_64
+      Architectures: 
+        - x86_64
       Handler: dev_kna_extractload_nitya_intern.lambda_handler
       Role: arn:aws:iam::797671034147:role/ELT-GITHUBROLE-NITYA
       Code:
@@ -61,7 +62,8 @@ Resources:
     Type: AWS::Lambda::Function
     Properties:
       FunctionName: dev_kna_rowfetch_nitya_intern
-      Architectures: x86_64
+      Architectures: 
+        - x86_64
       Handler: dev_kna_rowfetch_nitya_intern.lambda_handler
       Role: arn:aws:iam::797671034147:role/ELT-GITHUBROLE-NITYA
       Code:
@@ -88,7 +90,8 @@ Resources:
   OrchPreProcLambdaNitya:
     Type: AWS::Lambda::Function
     Properties:
-      Architectures: x86_64
+      Architectures: 
+        - x86_64
       FunctionName: dev_kna_processor_nitya_intern
       Handler: dev_kna_processor_nitya_intern.lambda_handler
       Role: arn:aws:iam::797671034147:role/ELT-GITHUBROLE-NITYA
@@ -116,7 +119,8 @@ Resources:
   SFTrigLambdaNitya:
     Type: AWS::Lambda::Function
     Properties:
-      Architechtures: x86_64
+      Architectures: 
+        - x86_64
       FunctionName: dev_kna_sftrig_nitya_intern
       Handler: dev_kna_sftrig_nitya_intern.lambda_handler
       Role: arn:aws:iam::797671034147:role/ELT-GITHUBROLE-NITYA
