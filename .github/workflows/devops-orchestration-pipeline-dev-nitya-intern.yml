@@ -49,7 +49,7 @@ jobs:
       #   with:
       #     name: dev-kna-sfsns-nitya-intern
       #     template: interns/nitya/infrastructure/orch-sf-sns-nitya-intern.yaml
-      #     no-fail-on-empty-changeset: true
+      #     no-fail-on-empty-changeset:  "1"
 
       - name: CloudFormation for IcebergTable Glue
         uses: aws-actions/aws-cloudformation-github-deploy@v1
@@ -57,13 +57,13 @@ jobs:
           name: dev-kna-orch-icebergglue-nitya-intern
           template: interns/nitya/infrastructure/orch-iceberg-glue-nitya-intern.yaml
           parameter-overrides: SecretKey=testval
-          no-fail-on-empty-changeset: true
+          no-fail-on-empty-changeset:  "1"
       - name: Cloudformation for StepFunction
         uses: aws-actions/aws-cloudformation-github-deploy@v1
         with:
           name: dev-kna-sf-cfn-nitya-intern
           template: interns/nitya/infrastructure/orch-sf-cfn-nitya-intern.yaml
-          no-fail-on-empty-changeset: true
+          no-fail-on-empty-changeset:  "1"
 
       - name: Cloudformation for all lambda and layers
         uses: aws-actions/aws-cloudformation-github-deploy@v1
@@ -72,5 +72,5 @@ jobs:
           template: interns/nitya/infrastructure/eltinfra-lambda-nitya-intern.yaml
             SecretKey=testvall
             SFArnnitya=dev-kna-orch-icebergglue-nitya-intern
-          no-fail-on-empty-changeset: true
+          no-fail-on-empty-changeset:  "1"
   
