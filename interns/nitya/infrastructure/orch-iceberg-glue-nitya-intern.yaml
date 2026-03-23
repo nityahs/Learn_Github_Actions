@@ -1,10 +1,11 @@
 Description: "AWS Glue Job Test"
-Resources:
+
 Parameters:
   SecretKey:
     NoEcho: True
     Type: String
 #iam arn: arn:aws:iam::953495608177:role/nga-dev-elt-glue-service-role 
+Resources:
   IcebergGlue:
     Type: AWS::Glue::Job
     Properties:
