@@ -19,7 +19,7 @@ Resources:
   orchstatemachine-nitya:
     Type: AWS::StepFunctions::StateMachine
     Properties:
-      StateMachineName: dev_orch_cfnsf_nitya_intern
+      StateMachineName: dev-orch-cfnsf-nitya-intern
       DefinitionS3Location:
         Bucket: klg-nga-dev-kna-raw-intrnl
         Key: intern_2025/nitya/StepFormationYAML/dev_orch_intern_t7procsf_nitya.yaml
