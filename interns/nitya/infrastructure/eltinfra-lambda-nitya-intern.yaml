@@ -17,7 +17,7 @@ Resources:
         S3Bucket: klg-nga-dev-kna-raw-intrnl-nitya
         S3Key: intern_2025/nitya/Lambda_Scripts/Layers/psycopg2-nitya.zip
       CompatibleRuntimes: 
-        -python 3.11
+        - python 3.11
   PreprocLayer:
     Type: AWS::Lambda::LayerVersion
     Properties:
@@ -27,7 +27,7 @@ Resources:
         S3Bucket: klg-nga-dev-kna-raw-intrnl-nitya
         S3Key: intern_2025/nitya/Lambda_Scripts/Layers/preproc-nitya.zip
       CompatibleRuntimes: 
-        -python3.11
+        - python3.11
   ELTInfraLambdaNitya:
     Type: AWS::Lambda::Function
     Properties:
