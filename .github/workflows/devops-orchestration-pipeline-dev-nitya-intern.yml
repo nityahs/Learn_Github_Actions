@@ -38,11 +38,11 @@ jobs:
       - name: Upload glue script to S3
         run: |
           aws s3 cp interns/nitya/scripts/glue/dev_kna_icebergglue_nitya_intern.py \
-                    s3://klg-nga-dev-kna-raw-intrnl-nitya/intern_2025/nitya/Glue_Scripts/
+                    s3://klg-nga-dev-kna-raw-intrnl-nitya/intern_2025/nitya/Glue_Scripts/ --sse AES256
       - name: Upload stepfunction script to S3
         run: |
           aws s3 cp interns/nitya/statemachines/dev_orch_intern_t7procsf_nitya.yaml \
-                    s3://klg-nga-dev-kna-raw-intrnl-nitya/intern_2025/nitya/StepFormationYAML/
+                    s3://klg-nga-dev-kna-raw-intrnl-nitya/intern_2025/nitya/StepFormationYAML/ --sse AES256
                     
       # - name: Cloudformation for SNS Data Fetch
       #   uses: aws-actions/aws-cloudformation-github-deploy@v1
