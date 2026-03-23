@@ -4,7 +4,7 @@ Parameters:
   SecretKey:
     NoEcho: True
     Type: String
-  SFArn-nitya:
+  SFArnnitya:
     Type: String
     Default: ""
 Resources:
@@ -16,7 +16,7 @@ Resources:
       Content:
         S3Bucket: klg-nga-dev-kna-raw-intrnl-nitya
         S3Key: intern_2025/nitya/Lambda_Scripts/Layers/psycopg2-nitya.zip
-      CompatibleRuntimes: python3.11
+      CompatibleRuntimes: [python3.11]
   PreprocLayer:
     Type: AWS::Lambda::LayerVersion
     Properties:
@@ -25,23 +25,23 @@ Resources:
       Content:
         S3Bucket: klg-nga-dev-kna-raw-intrnl-nitya
         S3Key: intern_2025/nitya/Lambda_Scripts/Layers/preproc-nitya.zip
-      CompatibleRuntimes: python3.11
+      CompatibleRuntimes: [python3.11]
   ELTInfraLambdaNitya:
     Type: AWS::Lambda::Function
     Properties:
       FunctionName: dev_kna_extractload_nitya_intern
-      Architechture: x86_64
+      Architechtures: x86_64
       Handler: dev_kna_extractload_nitya_intern.lambda_handler
       Role: arn:aws:iam::797671034147:role/ELT-GITHUBROLE-NITYA
       Code:
         S3Bucket: klg-nga-dev-kna-raw-intrnl-nitya
         S3Key: intern_2025/nitya/Lambda_Scripts/dev_kna_extractload_nitya_intern.zip
-      Runtime: python3.11
+      Runtime: [python3.11]
       Timeout: 300
       Layers:
         - !GetAtt PreprocLayer.Arn
         - arn:aws:lambda:us-east-1:336392948345:layer:AWSSDKPandas-Python311:25
-        - !IGetAtt Psycopg2Layer.Arn
+        - !GetAtt Psycopg2Layer.Arn
       MemorySize: 512
       EphemeralStorage:
         Size: 512
@@ -59,7 +59,7 @@ Resources:
     Type: AWS::Lambda::Function
     Properties:
       FunctionName: dev_kna_rowfetch_nitya_intern
-      Architechture: x86_64
+      Architechtures: x86_64
       Handler: dev_kna_rowfetch_nitya_intern.lambda_handler
       Role: arn:aws:iam::797671034147:role/ELT-GITHUBROLE-NITYA
       Code:
@@ -70,7 +70,7 @@ Resources:
       Layers:
         - !GetAtt PreprocLayer.Arn
         - arn:aws:lambda:us-east-1:336392948345:layer:AWSSDKPandas-Python311:25
-        - !IGetAtt Psycopg2Layer.Arn
+        - !GetAtt Psycopg2Layer.Arn
       MemorySize: 512
       EphemeralStorage:
         Size: 512
@@ -86,7 +86,7 @@ Resources:
   OrchPreProcLambdaNitya:
     Type: AWS::Lambda::Function
     Properties:
-      Architechture: x86_64
+      Architechtures: x86_64
       FunctionName: dev_kna_processor_nitya_intern
       Handler: dev_kna_processor_nitya_intern.lambda_handler
       Role: arn:aws:iam::797671034147:role/ELT-GITHUBROLE-NITYA
@@ -111,30 +111,30 @@ Resources:
       #   SubnetIds:
       #     - subnet-0b28437c8aae35364 
       #     - subnet-0635f34855417228e 
-  SFTrigLambdaNitya:
-    Type: AWS::Lambda::Function
-    Properties:
-      Architechture: x86_64
-      FunctionName: dev_kna_processor_nitya_intern
-      Handler: dev_kna_processor_nitya_intern.lambda_handler
-      Role: arn:aws:iam::797671034147:role/ELT-GITHUBROLE-NITYA
-      Code:
-        S3Bucket: klg-nga-dev-kna-raw-intrnl-nitya
-        S3Key: intern_2025/nitya/Lambda_Scripts/dev_kna_sftrig_nitya_intern.zip
-      Runtime: python3.11
-      Timeout: 300
-      Layers:
-        - !GetAtt PreprocLayer.Arn
-        - arn:aws:lambda:us-east-1:336392948345:layer:AWSSDKPandas-Python311:25
-        - !IGetAtt Psycopg2Layer.Arn
-      MemorySize: 512
-      EphemeralStorage:
-        Size: 512
-      Environment:
-        Variables:
-          SecretKey: !Ref SecretKey
-          SFArn-nitya: !Sub arn:aws:states:us-east-1:953495608177:stateMachine:${SFArn-nitya}
-      VpcConfig:
+  # SFTrigLambdaNitya:
+  #   Type: AWS::Lambda::Function
+  #   Properties:
+  #     Architechtures: x86_64
+  #     FunctionName: dev_kna_lamtrig_nitya_intern
+  #     Handler: dev_kna_lamtrig_nitya_intern.lambda_handler
+  #     Role: arn:aws:iam::797671034147:role/ELT-GITHUBROLE-NITYA
+  #     Code:
+  #       S3Bucket: klg-nga-dev-kna-raw-intrnl-nitya
+  #       S3Key: intern_2025/nitya/Lambda_Scripts/dev_kna_sftrig_nitya_intern.zip
+  #     Runtime: python3.11
+  #     Timeout: 300
+  #     Layers:
+  #       - !GetAtt PreprocLayer.Arn
+  #       - arn:aws:lambda:us-east-1:336392948345:layer:AWSSDKPandas-Python311:25
+  #       - !IGetAtt Psycopg2Layer.Arn
+  #     MemorySize: 512
+  #     EphemeralStorage:
+  #       Size: 512
+  #     Environment:
+  #       Variables:
+  #         SecretKey: !Ref SecretKey
+  #         SFArnnitya: !Sub arn:aws:states:us-east-1:953495608177:stateMachine:${SFArnnitya}
+  #     VpcConfig:
         # SecurityGroupIds:
         #   - sg-0ee8b9ce60f4a7599
         # SubnetIds:
