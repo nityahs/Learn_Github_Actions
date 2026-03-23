@@ -9,7 +9,7 @@
     fetchdatasqsaccesspolicy:
       Type: AWS::SQS::QueuePolicy
       Properties:
-        Queue: 
+        Queues: 
           - !Ref fetchdatasqsnityaintern
         PolicyDocument:
           Version: 2008-10-17
@@ -35,7 +35,8 @@
               key:
                 prefix: intern_2025/nitya/Land/
         Targets:
-          Arn: !GetAtt fetchdatasqsnityaintern.Arn
+          - Arn: !GetAtt fetchdatasqsnityaintern.Arn
+            Id: fetchdatasqsnityaintern
   Outputs:
     QueueUrl:
       Value: !Ref fetchdatasqsnityaintern
