@@ -18,7 +18,7 @@ Parameters:
         MaxConcurrentRuns: 10
       MaxRetries: 0
       Name: dev-kna-orch-icebergglue-nitya-intern
-      Role: arn:aws:iam::953495608177:role/nga-dev-elt-glue-service-role
+      Role: arn:aws:iam::797671034147:role/ELT-GITHUBROLE-NITYA
       NumberOfWorkers: 2
       Timeout: 10
       WorkerType: G.1X
