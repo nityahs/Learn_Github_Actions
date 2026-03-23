@@ -103,7 +103,7 @@ Resources:
       Layers:
         - !GetAtt PreprocLayer.LayerVersionArn 
         - arn:aws:lambda:us-east-1:336392948345:layer:AWSSDKPandas-Python311:25
-        - !IGetAtt Psycopg2Layer.LayerVersionArn 
+        - !GetAtt Psycopg2Layer.LayerVersionArn 
       MemorySize: 512
       EphemeralStorage:
         Size: 512
@@ -132,7 +132,7 @@ Resources:
       Layers:
         - !GetAtt PreprocLayer.LayerVersionArn 
         - arn:aws:lambda:us-east-1:336392948345:layer:AWSSDKPandas-Python311:25
-        - !IGetAtt Psycopg2Layer.LayerVersionArn 
+        - !GetAtt Psycopg2Layer.LayerVersionArn 
       MemorySize: 512
       EphemeralStorage:
         Size: 512
