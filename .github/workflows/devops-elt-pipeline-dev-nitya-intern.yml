@@ -52,6 +52,7 @@ jobs:
       - name: Zip psycopg2 layer
         run: |
           cd interns/nitya/scripts/lambda/layers/psycopg2-nitya
+          mkdir -p ../lambdazip-nitya
           zip -r ../lambdazip-nitya/psycopg2-nitya.zip python
       - name: Zip preproc layer
         run: |
