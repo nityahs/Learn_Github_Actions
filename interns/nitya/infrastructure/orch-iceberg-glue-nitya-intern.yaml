@@ -12,8 +12,6 @@ Parameters:
         Name: glueetl
         PythonVersion: 3.9
         ScriptLocation: "s3://klg-nga-dev-kna-raw-intrnl/intern_2025/nitya/Glue_Scripts/dev_kna_icebergglue_nitya_intern.py"
-      DefaultArguments:
-        "--job-bookmark-option": "job-bookmark-enable"
       ExecutionProperty:
         MaxConcurrentRuns: 10
       MaxRetries: 0
@@ -29,4 +27,5 @@ Parameters:
         "--datalake-formats": "iceberg"
         "--secret_key": !Ref SecretKey
         "--additional-python-modules": "psycopg2-binary==2.9.9"
+        "--job-bookmark-option": "job-bookmark-enable"
         
