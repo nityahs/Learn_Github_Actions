@@ -56,7 +56,12 @@ jobs:
       - name: Zip preproc layer
         run: |
           cd interns/nitya/scripts/lambda/layers/preproc-nitya
-          zip -r ../lambdazip-nitya/preproc-nitya.zip python  
+          zip -r ../lambdazip-nitya/preproc-nitya.zip python 
+      - name: Zip lambda script that performs sf trigger
+        run: |
+          mkdir -p interns/nitya/scripts/lambda/build
+          zip  interns/nitya/scripts/lambda/build/dev_kna_sftrig_nitya_intern.zip \
+                interns/nitya/scripts/lambda/dev_kna_sftrig_nitya_intern.py
       - name: Upload lambda scripts to S3
         run: |
           aws s3 cp interns/nitya/scripts/lambda/build/dev_kna_extractload_nitya_intern.zip \
@@ -64,6 +69,8 @@ jobs:
           aws s3 cp interns/nitya/scripts/lambda/build/dev_kna_rowfetch_nitya_intern.zip \
                     s3://klg-nga-dev-kna-raw-intrnl/intern_2025/nitya/Lambda_Scripts/
           aws s3 cp interns/nitya/scripts/lambda/build/dev_kna_processor_nitya_intern.zip \
+                    s3://klg-nga-dev-kna-raw-intrnl/intern_2025/nitya/Lambda_Scripts/  
+          aws s3 cp interns/nitya/scripts/lambda/build/dev_kna_sftrig_nitya_intern.zip \
                     s3://klg-nga-dev-kna-raw-intrnl/intern_2025/nitya/Lambda_Scripts/  
       - name: Upload lambda layers to S3
         run: |
