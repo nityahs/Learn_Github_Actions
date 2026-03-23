@@ -1,4 +1,4 @@
-  AWSTemplateFormatVersion: '2012-10-17'
+  AWSTemplateFormatVersion: "2010-09-09"
   Description: Cloud formation here creates SQS and Lambda for processing incoming data
   Resources:
     fetchdatasqsnityaintern:
@@ -12,7 +12,7 @@
         Queues: 
           - !Ref fetchdatasqsnityaintern
         PolicyDocument:
-          Version: 2008-10-17
+          Version: 2012-10-17
           Id: SQSAccessPolicy
           Statement:
             - Sid: "AllowAll"
