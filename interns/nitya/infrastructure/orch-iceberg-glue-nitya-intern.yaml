@@ -22,9 +22,6 @@ Parameters:
       NumberOfWorkers: 2
       Timeout: 10
       WorkerType: G.1X
-      Connections:
-        Connections: 
-          - nga_npd_vpc
       DefaultArguments:
         "--enable-metrics": ""
         "--conf": "spark.eventLog.rolling.enabled=true"
