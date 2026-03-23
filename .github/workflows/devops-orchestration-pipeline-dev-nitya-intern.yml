@@ -56,7 +56,7 @@ jobs:
         with:
           name: dev-kna-orch-icebergglue-nitya-intern
           template: interns/nitya/infrastructure/orch-iceberg-glue-nitya-intern.yaml
-          parameter-overrides: secret_key=${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          parameter-overrides: secret_key=testval
           no-fail-on-empty-changeset: true
       - name: Cloudformation for StepFunction
         uses: aws-actions/aws-cloudformation-github-deploy@v1
@@ -70,7 +70,7 @@ jobs:
         with:
           name: dev-kna-etlinfralmdcf-nitya-intern
           template: interns/nitya/infrastructure/eltinfra-lambda-nitya-intern.yaml
-            secret_key=${{ secrets.AWS_SECRET_ACCESS_KEY }}
+            secret_key=testvall
             SFArn-nitya=dev-kna-orch-icebergglue-nitya-intern
           no-fail-on-empty-changeset: true
   
