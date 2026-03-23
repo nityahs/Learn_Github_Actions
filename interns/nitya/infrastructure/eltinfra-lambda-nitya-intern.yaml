@@ -31,7 +31,7 @@ Resources:
     Properties:
       Architechture: x86_64
       Handler: dev_kna_extractload_nitya_intern.lambda_handler
-      Role: arn:aws:iam::953495608177:role/nga-dev-elt-lambda-service-role
+      Role: arn:aws:iam::797671034147:role/ELT-GITHUBROLE-NITYA
       Code:
         S3Bucket: klg-nga-dev-kna-raw-intrnl-nitya
         S3Key: intern_2025/nitya/Lambda_Scripts/dev_kna_extractload_nitya_intern.zip
@@ -59,7 +59,7 @@ Resources:
     Properties:
       Architechture: x86_64
       Handler: dev_kna_rowfetch_nitya_intern.lambda_handler
-      Role: arn:aws:iam::953495608177:role/nga-dev-elt-lambda-service-role
+      Role: arn:aws:iam::797671034147:role/ELT-GITHUBROLE-NITYA
       Code:
         S3Bucket: klg-nga-dev-kna-raw-intrnl-nitya
         S3Key: intern_2025/nitya/Lambda_Scripts/dev_kna_rowfetch_nitya_intern.zip
@@ -86,7 +86,7 @@ Resources:
     Properties:
       Architechture: x86_64
       Handler: dev_kna_processor_nitya_intern.lambda_handler
-      Role: arn:aws:iam::953495608177:role/nga-dev-elt-lambda-service-role
+      Role: arn:aws:iam::797671034147:role/ELT-GITHUBROLE-NITYA
       Code:
         S3Bucket: klg-nga-dev-kna-raw-intrnl-nitya
         S3Key: intern_2025/nitya/Lambda_Scripts/dev_kna_processor_nitya_intern.zip
@@ -113,7 +113,7 @@ Resources:
     Properties:
       Architechture: x86_64
       Handler: dev_kna_processor_nitya_intern.lambda_handler
-      Role: arn:aws:iam::953495608177:role/nga-dev-elt-lambda-service-role
+      Role: arn:aws:iam::797671034147:role/ELT-GITHUBROLE-NITYA
       Code:
         S3Bucket: klg-nga-dev-kna-raw-intrnl-nitya
         S3Key: intern_2025/nitya/Lambda_Scripts/dev_kna_sftrig_nitya_intern.zip
