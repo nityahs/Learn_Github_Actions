@@ -39,12 +39,12 @@ Resources:
       Code:
         S3Bucket: klg-nga-dev-kna-raw-intrnl-nitya
         S3Key: intern_2025/nitya/Lambda_Scripts/dev_kna_extractload_nitya_intern.zip
-      Runtime: [python3.11]
+      Runtime: python 3.11
       Timeout: 300
       Layers:
-        - !GetAtt PreprocLayer.Arn
+        - !GetAtt PreprocLayer.LayerVersionArn 
         - arn:aws:lambda:us-east-1:336392948345:layer:AWSSDKPandas-Python311:25
-        - !GetAtt Psycopg2Layer.Arn
+        - !GetAtt Psycopg2Layer.LayerVersionArn 
       MemorySize: 512
       EphemeralStorage:
         Size: 512
@@ -72,9 +72,9 @@ Resources:
       Runtime: python3.11
       Timeout: 300
       Layers:
-        - !GetAtt PreprocLayer.Arn
+        - !GetAtt PreprocLayer.LayerVersionArn 
         - arn:aws:lambda:us-east-1:336392948345:layer:AWSSDKPandas-Python311:25
-        - !GetAtt Psycopg2Layer.Arn
+        - !GetAtt Psycopg2Layer.LayerVersionArn 
       MemorySize: 512
       EphemeralStorage:
         Size: 512
@@ -101,9 +101,9 @@ Resources:
       Runtime: python3.11
       Timeout: 300
       Layers:
-        - !GetAtt PreprocLayer.Arn
+        - !GetAtt PreprocLayer.LayerVersionArn 
         - arn:aws:lambda:us-east-1:336392948345:layer:AWSSDKPandas-Python311:25
-        - !IGetAtt Psycopg2Layer.Arn
+        - !IGetAtt Psycopg2Layer.LayerVersionArn 
       MemorySize: 512
       EphemeralStorage:
         Size: 512
@@ -130,9 +130,9 @@ Resources:
       Runtime: python3.11
       Timeout: 300
       Layers:
-        - !GetAtt PreprocLayer.Arn
+        - !GetAtt PreprocLayer.LayerVersionArn 
         - arn:aws:lambda:us-east-1:336392948345:layer:AWSSDKPandas-Python311:25
-        - !IGetAtt Psycopg2Layer.Arn
+        - !IGetAtt Psycopg2Layer.LayerVersionArn 
       MemorySize: 512
       EphemeralStorage:
         Size: 512
