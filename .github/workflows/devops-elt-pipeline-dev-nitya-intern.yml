@@ -8,7 +8,7 @@ on:
 jobs:
   cloudformation-validation-nitya:
     runs-on: ubuntu-latest
-    environment: dev-kna
+
     steps:
       - name: Code checkout from github repo
         uses: actions/checkout@v4
@@ -28,12 +28,12 @@ jobs:
       - name: Code checkout from github repo
         uses: actions/checkout@v4
 
-      - name: Configure AWS credentials
-        uses: aws-actions/configure-aws-credentials@v4
+      - name: Configure AWS Credentials
+        uses: aws-actions/configure-aws-credentials@v6.0.0
         with:
-          aws-region: us-east-1
-          role-to-assume: ${{secrets.CICD_ASSUME_ROLE}}
-          role-session-name: GitHubRoleSession
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: ${{ secrets.AWS_SECRET_REGION }}
       - name: Zip lambda script that extract metadata and load
         run: |
           mkdir -p interns/nitya/scripts/lambda/build
@@ -97,7 +97,7 @@ jobs:
           name: dev-kna-eltinfrasqscf-nitya-intern
           template: interns/nitya/infrastructure/eltinfra-sqs-nitya-intern.yaml
           no-fail-on-empty-changeset: true
-          role-arn: ${{secrets.CICD_EXECUTION_ROLE}}
+
       - name: Cloudformation for all lambda and layers
         uses: aws-actions/aws-cloudformation-github-deploy@v1
         with:
@@ -105,6 +105,6 @@ jobs:
           template: interns/nitya/infrastructure/eltinfra-lambda-nitya-intern.yaml
           parameter-overrides: secret_key=${{secrets.SECRET_KEY_NAME}}
           no-fail-on-empty-changeset: true
-          role-arn: ${{secrets.CICD_EXECUTION_ROLE}}          
+       
         
     
