@@ -83,7 +83,7 @@ jobs:
       #   with:
       #     name: dev-kna-psycopg2layer-nitya-intern
       #     template: interns/nitya/infrastructure/eltinfra-layercf-nitya-intern.yaml
-      #     no-fail-on-empty-changeset: true
+      #     no-fail-on-empty-changeset: "1"
       #     role-arn: ${{secrets.CICD_EXECUTION_ROLE}}
       #     parameter-overrides: |
       #       LayerName: psycopg2-nitya
@@ -93,7 +93,7 @@ jobs:
       #   with:
       #     name: dev-kna-preproclayer-nitya-intern
       #     template: interns/nitya/infrastructure/eltinfra-layercf-nitya-intern.yaml
-      #     no-fail-on-empty-changeset: true
+      #     no-fail-on-empty-changeset: "1"
       #     role-arn: ${{secrets.CICD_EXECUTION_ROLE}}
       #     parameter-overrides: |
       #       LayerName: preproc-nitya
@@ -103,7 +103,7 @@ jobs:
         with:
           name: dev-kna-eltinfrasqscf-nitya-intern
           template: interns/nitya/infrastructure/eltinfra-sqs-nitya-intern.yaml
-          no-fail-on-empty-changeset: true
+          no-fail-on-empty-changeset: "1"
 
       - name: Cloudformation for all lambda and layers
         uses: aws-actions/aws-cloudformation-github-deploy@v1
@@ -111,7 +111,7 @@ jobs:
           name: dev-kna-etlinfralmdcf-nitya-intern
           template: interns/nitya/infrastructure/eltinfra-lambda-nitya-intern.yaml
           parameter-overrides: secret_key=${{secrets.SECRET_KEY_NAME}}
-          no-fail-on-empty-changeset: true
+          no-fail-on-empty-changeset: "1"
        
         
     
