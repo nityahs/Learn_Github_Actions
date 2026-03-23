@@ -36,12 +36,12 @@
                 prefix: intern_2025/nitya/Land/
         Targets:
           Arn: !GetAtt fetchdatasqsnityaintern.Arn
-Outputs:
-  QueueUrl:
-    Value: !Ref fetchdatasqsnityaintern
-    Export:
-      Name: fetchdatasqsnitya-url
-  QueueArn:
-    Value: !GetAtt fetchdatasqsnityaintern.Arn
-    Export:
-      Name: fetchdatasqsnitya-arn
+  Outputs:
+    QueueUrl:
+      Value: !Ref fetchdatasqsnityaintern
+      Export:
+        Name: fetchdatasqsnitya-url
+    QueueArn:
+      Value: !GetAtt fetchdatasqsnityaintern.Arn
+      Export:
+        Name: fetchdatasqsnitya-arn
